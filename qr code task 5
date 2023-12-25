@@ -1,0 +1,39 @@
+import cv2
+import pyzbar.pyzbar as pyzbar
+
+def scan_qr_code(frame):
+    decoded_objects = pyzbar.decode(frame)
+    for obj in decoded_objects:
+        data = obj.data.decode("utf-8")
+        return data
+    return None
+
+# Access the webcam
+cap = cv2.VideoCapture(0)
+
+while True:
+    # Capture frame-by-frame
+    ret, frame = cap.read()
+
+    # Scan for QR code
+    data = scan_qr_code(frame)
+
+    # If QR code detected, display information and handle actions
+    if data:
+        print("QR code data:", data)
+        # Handle actions based on data (e.g., open link, save contact)
+        if data.startswith("http"):  # Example: Open link in web browser
+            import webbrowser
+            webbrowser.open(data)
+        break  # Exit the loop after successful scan
+
+    # Display the resulting frame
+    cv2.imshow("QR Code Scanner", frame)
+
+    # Exit if 'q' key is pressed
+    if cv2.waitKey(1) == ord("q"):
+        break
+
+# Release resources
+cap.release()
+cv2.destroyAllWindows()
